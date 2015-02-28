@@ -32,5 +32,25 @@ module.exports = {
         }
 
         return seconds * 1000;
+    },
+    sendMessage: function (name, message) {
+        var popovers, i;
+
+        if (typeof chrome != "undefined") {
+            chrome.extension.sendMessage({
+                name:    name,
+                message: message
+            });
+        } else if (typeof safari != "undefined") {
+            popovers = safari.extension.popovers;
+            i = popovers.length;
+
+            while (i--) {
+                popovers[i].contentWindow.scroblrView.messageHandler({
+                    name: name,
+                    message: message
+                });
+            }
+        }
     }
 };

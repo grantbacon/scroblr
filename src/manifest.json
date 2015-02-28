@@ -60,7 +60,9 @@
 	"options_page": "options.html",
 	"permissions": [
 		"notifications",
-		"http://ws.audioscrobbler.com/2.0/"
+		"http://ws.audioscrobbler.com/2.0/",
+        "webRequest",
+        "*://*.soundcloud.com/*"
 	],
 	"web_accessible_resources": [
 		"img/scroblr64.png"

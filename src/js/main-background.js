@@ -236,6 +236,10 @@ window.scroblrGlobal = (function () {
         sendMessage("trackLoved");
     }
 
+    function addRequestHandler(params) {
+        chrome.webRequest.onBeforeRequest.addListener(params.callback, params.filter);
+    }
+
     /**
      * Handles all incoming event messages from other extension resources.
      *
@@ -279,6 +283,49 @@ window.scroblrGlobal = (function () {
 		case "updateCurrentTrack":
 			updateCurrentTrack(msg.message);
 			break;
+        case "registerWebRequestHandler":
+            registerWebRequestHandler(msg.message);
+            break;
+        }
+    }
+
+    /**
+     * Adds an onBeforeRequest listener to chrome's webRequest extension
+     * this allows plugins to filter web requests to obtain song info
+     * from API calls
+     *
+     * @param {object} message An object with two fields: callback and filter which are
+     *                         the arguments to add a WebRequest listener
+     */
+    function registerWebRequestHandler(message) {
+        if (typeof chrome.webRequest !== undefined) {
+
+            var soundcloudListener = function(req) {
+                if (req.method != "POST") {
+                    return;
+                }
+
+                var trackIDRe = /\/tracks\/(\d+)\//i;
+                var clientIDRe = /client_id=([a-z0-9]+)/i;
+                var trackID = req.url.match(trackIDRe)[0].split('/')[2];
+                var clientID = req.url.match(clientIDRe)[1];
+                var songInfo;
+
+                var songData = $.get("http://api.soundcloud.com/tracks/" + trackID + "?client_id=" + clientID,
+                                function(response) {
+                                    console.log("Artist: " + response.user.username);
+                                    console.log("Title: " + response.title);
+                                });
+
+
+            };
+
+            var soundcloudFilter = {
+                urls: ["*://api.soundcloud.com/tracks/*/plays*"],
+                types: ["xmlhttprequest"]
+            };
+
+            chrome.webRequest.onBeforeRequest.addListener(soundcloudListener, soundcloudFilter);
         }
     }
 

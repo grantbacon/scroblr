@@ -3,6 +3,7 @@
 var $            = require("jquery");
 var conf         = require("./conf.json");
 var Track        = require("./modules/Track");
+var Util         = require("./modules/Utilities");
 var plugins      = require("./plugins");
 var currentTrack = null;
 var host         = null;

@@ -3,8 +3,29 @@
 var $          = require("jquery");
 var Plugin     = require("../modules/Plugin");
 var soundcloud = Object.create(Plugin);
+var Utils      = require("../modules/Utilities");
 
 soundcloud.init("soundcloud", "SoundCloud");
+
+soundcloud.initialize = function () {
+
+    /*
+    // This may not work in Safari per comments in sendMessage
+    // since callback is a function value
+    var handler = {
+        callback: function(req) {
+            console.log(req);
+        }, 
+        filter: {
+            urls: ["*://api*.soundcloud.com/*"],
+            types:["xmlhttprequest"]
+        }
+    };
+    */
+
+    Utils.sendMessage("registerWebRequestHandler", undefined);
+
+};
 
 soundcloud.scrape = function () {
     var info, player, playing, soundcloudNext, compactArr;
